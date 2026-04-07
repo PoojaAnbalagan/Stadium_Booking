@@ -104,7 +104,6 @@ require_once 'config.php';
                     </button>
                 </form>
             </div>
-        </div>
 
         <!-- Recommendations Section -->
         <?php 
