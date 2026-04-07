@@ -2054,3 +2054,88 @@ body.fade-out {
         right: 20px;
     }
 }
+
+/* ==================== RECOMMENDATIONS ==================== */
+.recommendations-section {
+    margin: 40px 0 60px;
+    position: relative;
+    z-index: 10;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.recommendation-card {
+    background: rgba(34, 34, 34, 0.4);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--transition);
+    text-decoration: none;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.recommendation-card:hover {
+    background: rgba(44, 44, 44, 0.6);
+    transform: translateY(-5px);
+    border-color: var(--primary-green);
+    box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+}
+
+.rec-type-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--primary-green);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 800;
+}
+
+.rec-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary-green);
+}
+
+.rec-content h4 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.rec-content p {
+    color: var(--text-gray);
+    font-size: 0.85rem;
+}
+
+.rec-action {
+    margin-left: auto;
+    color: var(--primary-green);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: var(--transition);
+}
+
+.recommendation-card:hover .rec-action {
+    opacity: 1;
+    transform: translateX(0);
+}

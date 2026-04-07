@@ -106,6 +106,55 @@ require_once 'config.php';
             </div>
         </div>
 
+        <!-- Recommendations Section -->
+        <?php 
+        require_once 'get_recommendations.php';
+        $recs = getRecommendations();
+        ?>
+        <div class="recommendations-section reveal active">
+            <div class="recommendations-grid">
+                <?php if (isset($recs['personalized'])): ?>
+                    <a href="calendar.php?sport=<?= $recs['personalized']['sport_id'] ?>&date=<?= date('Y-m-d') ?>" class="recommendation-card">
+                        <div class="rec-type-badge"><?= $recs['personalized']['type'] ?></div>
+                        <div class="rec-icon">
+                            <i class="fas <?= $recs['personalized']['icon'] ?>"></i>
+                        </div>
+                        <div class="rec-content">
+                            <h4><?= $recs['personalized']['title'] ?></h4>
+                            <p><?= $recs['personalized']['subtitle'] ?></p>
+                        </div>
+                        <div class="rec-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                <?php endif; ?>
+
+                <?php if (isset($recs['trending'])): ?>
+                    <?php 
+                        // Simplified mapping for the quick link
+                        $targetSportId = 1;
+                        if ($recs['trending']['sport_name'] === 'Football') $targetSportId = 1;
+                        elseif ($recs['trending']['sport_name'] === 'Basketball') $targetSportId = 2;
+                        elseif ($recs['trending']['sport_name'] === 'Tennis') $targetSportId = 3;
+                        elseif ($recs['trending']['sport_name'] === 'Cricket') $targetSportId = 4;
+                    ?>
+                    <a href="calendar.php?court=<?= $recs['trending']['court_id'] ?>&date=<?= date('Y-m-d') ?>&sport=<?= $targetSportId ?>" class="recommendation-card">
+                        <div class="rec-type-badge"><?= $recs['trending']['type'] ?></div>
+                        <div class="rec-icon">
+                            <i class="fas <?= $recs['trending']['icon'] ?>"></i>
+                        </div>
+                        <div class="rec-content">
+                            <h4><?= $recs['trending']['title'] ?></h4>
+                            <p><?= $recs['trending']['subtitle'] ?></p>
+                        </div>
+                        <div class="rec-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <!-- The Bento Grid (Sports Selection) -->
         <div class="bento-grid">
             <!-- Football (Large) - Key Sport -->
