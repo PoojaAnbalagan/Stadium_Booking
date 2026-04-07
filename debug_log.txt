@@ -56,3 +56,11 @@ Array
     [password] => 1234
 )
 
+POST Request:
+Array
+(
+    [action] => login
+    [email] => admin@stadium.com
+    [password] => admin123
+)
+
