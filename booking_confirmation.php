@@ -554,15 +554,15 @@ if (!$booking) {
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Court:</span>
-                        <span class="detail-value"><?= htmlspecialchars($booking['court_name']) ?></span>
+                        <span class="detail-value"><?= htmlspecialchars($booking['court_name'] ?? '') ?></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Sport:</span>
-                        <span class="detail-value"><?= htmlspecialchars($booking['sport_name']) ?></span>
+                        <span class="detail-value"><?= htmlspecialchars($booking['sport_name'] ?? '') ?></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Type:</span>
-                        <span class="detail-value"><?= htmlspecialchars($booking['court_type']) ?></span>
+                        <span class="detail-value"><?= htmlspecialchars($booking['court_type'] ?? 'Standard') ?></span>
                     </div>
                 </div>
 
@@ -640,7 +640,7 @@ if (!$booking) {
                 <div class="info-box">
                     <p>
                         <i class="fas fa-envelope"></i>
-                        A confirmation email has been sent to <strong><?= htmlspecialchars($booking['email']) ?></strong>
+                        A confirmation email has been sent to <strong><?= htmlspecialchars($booking['email'] ?? '') ?></strong>
                     </p>
                 </div>
             </div>
