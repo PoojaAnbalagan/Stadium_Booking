@@ -1,0 +1,58 @@
+POST Request:
+Array
+(
+    [action] => login
+    [email] => poojaap356@gmail.com
+    [password] => abc123
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => poojaap356@gmail.com
+    [password] => abc123
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => poojaap356@gmail.com
+    [password] => abc123
+)
+
+POST Request:
+Array
+(
+    [action] => register
+    [full_name] => praveenaj
+    [email] => ajpraveen311@gmail.com
+    [phone] => 0752960219
+    [password] => praveen123
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => ajpraveen311@gmail.com
+    [password] => praveen123
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => poojaap356@gmail.com
+    [password] => 1234
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => poojaap356@gmail.com
+    [password] => 1234
+)
+
