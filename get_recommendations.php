@@ -8,13 +8,13 @@ function getRecommendations() {
     if (isLoggedIn()) {
         $user_id = $_SESSION['user_id'];
         
-        // 1. Personalized: Find the most booked sport by this user
-        $query = "SELECT s.id, s.name as sport_name, COUNT(b.id) as booking_count 
+        // 1. Personalized: Find the most booked court/sport by this user
+        $query = "SELECT s.id as sport_id, s.name as sport_name, c.id as court_id, COUNT(b.id) as booking_count 
                   FROM bookings b 
                   JOIN courts c ON b.court_id = c.id 
                   JOIN sports s ON c.sport_id = s.id 
                   WHERE b.user_id = ? 
-                  GROUP BY s.id 
+                  GROUP BY c.id 
                   ORDER BY booking_count DESC 
                   LIMIT 1";
         
@@ -26,20 +26,22 @@ function getRecommendations() {
         mysqli_stmt_close($stmt);
 
         if ($most_booked) {
-            // Suggest another court of the same sport OR a popular choice for them
-            $sport_id = $most_booked['id'];
+            // Suggest the same court they used before
+            $sport_id = $most_booked['sport_id'];
+            $court_id = $most_booked['court_id'];
             $recommendations['personalized'] = [
                 'type' => 'Based on your activity',
                 'title' => "You love " . $most_booked['sport_name'] . "!",
-                'subtitle' => "Try booking a session for this weekend.",
+                'subtitle' => "Book your favorite court again.",
                 'sport_id' => $sport_id,
+                'court_id' => $court_id,
                 'icon' => getSportIcon($most_booked['sport_name'])
             ];
         }
     }
 
     // 2. Global: Find the trending court (most booked in last 7 days)
-    $trending_query = "SELECT c.id as court_id, c.name as court_name, s.name as sport_name, COUNT(b.id) as volume 
+    $trending_query = "SELECT c.id as court_id, c.name as court_name, s.name as sport_name, s.id as sport_id, COUNT(b.id) as volume 
                        FROM bookings b 
                        JOIN courts c ON b.court_id = c.id 
                        JOIN sports s ON c.sport_id = s.id 
@@ -57,6 +59,7 @@ function getRecommendations() {
             'title' => $trending['court_name'],
             'subtitle' => "Currently the most popular " . $trending['sport_name'] . " court.",
             'court_id' => $trending['court_id'],
+            'sport_id' => $trending['sport_id'],
             'sport_name' => $trending['sport_name'],
             'icon' => getSportIcon($trending['sport_name'])
         ];

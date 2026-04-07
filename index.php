@@ -8,7 +8,7 @@ require_once 'config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBook - The Arena</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Small overrides or critical inline styles can stay if absolutely necessary, 
@@ -113,7 +113,7 @@ require_once 'config.php';
         <div class="recommendations-section reveal active">
             <div class="recommendations-grid">
                 <?php if (isset($recs['personalized'])): ?>
-                    <a href="calendar.php?sport=<?= $recs['personalized']['sport_id'] ?>&date=<?= date('Y-m-d') ?>" class="recommendation-card">
+                    <a href="calendar.php?sport=<?= $recs['personalized']['sport_id'] ?>&court=<?= $recs['personalized']['court_id'] ?>&date=<?= date('Y-m-d') ?>" class="recommendation-card">
                         <div class="rec-type-badge"><?= $recs['personalized']['type'] ?></div>
                         <div class="rec-icon">
                             <i class="fas <?= $recs['personalized']['icon'] ?>"></i>
@@ -129,15 +129,7 @@ require_once 'config.php';
                 <?php endif; ?>
 
                 <?php if (isset($recs['trending'])): ?>
-                    <?php 
-                        // Simplified mapping for the quick link
-                        $targetSportId = 1;
-                        if ($recs['trending']['sport_name'] === 'Football') $targetSportId = 1;
-                        elseif ($recs['trending']['sport_name'] === 'Basketball') $targetSportId = 2;
-                        elseif ($recs['trending']['sport_name'] === 'Tennis') $targetSportId = 3;
-                        elseif ($recs['trending']['sport_name'] === 'Cricket') $targetSportId = 4;
-                    ?>
-                    <a href="calendar.php?court=<?= $recs['trending']['court_id'] ?>&date=<?= date('Y-m-d') ?>&sport=<?= $targetSportId ?>" class="recommendation-card">
+                    <a href="calendar.php?court=<?= $recs['trending']['court_id'] ?>&date=<?= date('Y-m-d') ?>&sport=<?= $recs['trending']['sport_id'] ?>" class="recommendation-card">
                         <div class="rec-type-badge"><?= $recs['trending']['type'] ?></div>
                         <div class="rec-icon">
                             <i class="fas <?= $recs['trending']['icon'] ?>"></i>
@@ -261,51 +253,56 @@ require_once 'config.php';
             </div>
         </div>
 
-        <!-- Testimonials -->
+        <!-- Dynamic Testimonials -->
         <div class="section-header reveal">
             <p class="section-subtitle">Community Love</p>
             <h2 class="section-title">Player Stories</h2>
         </div>
 
         <div class="testimonials-grid reveal">
-            <div class="testimonial-card">
-                <div class="user-profile">
-                    <div class="user-avatar"><i class="fas fa-user"></i></div>
-                    <div>
-                        <h4 style="color:var(--white);">John D.</h4>
-                        <div class="stars">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <?php
+            // Fetch 3 latest reviews with user's full name
+            $review_query = "SELECT r.*, u.full_name FROM reviews r JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT 3";
+            $review_result = mysqli_query($conn, $review_query);
+            
+            if ($review_result && mysqli_num_rows($review_result) > 0):
+                while ($review = mysqli_fetch_assoc($review_result)):
+            ?>
+                <div class="testimonial-card">
+                    <div class="user-profile">
+                        <div class="user-avatar"><?= strtoupper(substr($review['full_name'], 0, 1)) ?></div>
+                        <div>
+                            <h4 style="color:var(--white);"><?= htmlspecialchars($review['full_name']) ?></h4>
+                            <div class="stars">
+                                <?php for($i=1; $i<=5; $i++): ?>
+                                    <i class="<?= $i <= $review['rating'] ? 'fas' : 'far' ?> fa-star"></i>
+                                <?php endfor; ?>
+                            </div>
                         </div>
                     </div>
+                    <p class="quote">"<?= htmlspecialchars($review['comment']) ?>"</p>
                 </div>
-                <p class="quote">"Absolutely the best football turf in the city. The booking process is unmatched!"</p>
-            </div>
-            <div class="testimonial-card">
-                <div class="user-profile">
-                    <div class="user-avatar"><i class="fas fa-user"></i></div>
-                    <div>
-                        <h4 style="color:var(--white);">Sarah M.</h4>
-                        <div class="stars">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+            <?php 
+                endwhile;
+            else:
+                // Fallback if no reviews yet
+            ?>
+                <div class="testimonial-card">
+                    <div class="user-profile">
+                        <div class="user-avatar">I</div>
+                        <div>
+                            <h4 style="color:var(--white);">Admin</h4>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
                         </div>
                     </div>
+                    <p class="quote">"Be the first to share your experience after booking a court!"</p>
                 </div>
-                <p class="quote">"I love the basketball court lighting. Easy to book and super friendly staff."</p>
-            </div>
-            <div class="testimonial-card">
-                <div class="user-profile">
-                    <div class="user-avatar"><i class="fas fa-user"></i></div>
-                    <div>
-                        <h4 style="color:var(--white);">Mike R.</h4>
-                        <div class="stars">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="quote">"The 3D website is sick! Booking a cricket pitch has never been this cool."</p>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
+</div>
     
     <!-- Site Footer -->
     <footer class="site-footer">

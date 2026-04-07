@@ -643,6 +643,45 @@ if (!$booking) {
                         A confirmation email has been sent to <strong><?= htmlspecialchars($booking['email'] ?? '') ?></strong>
                     </p>
                 </div>
+
+                <!-- Feedback Form -->
+                <div class="feedback-card" style="margin-top: 40px; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(0,255,136,0.2);">
+                    <h3 style="color: var(--white); margin-bottom: 20px; text-align: center;">Rate Your Experience</h3>
+                    <form action="submit_review.php" method="POST">
+                        <div class="rating-stars" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; font-size: 2rem; color: #ffcc00; cursor: pointer;">
+                            <input type="radio" id="star5" name="rating" value="5" style="display:none;" required onclick="updateStars(5)">
+                            <label for="star5" class="star" id="st1"><i class="far fa-star"></i></label>
+                            <input type="radio" id="star4" name="rating" value="4" style="display:none;" onclick="updateStars(4)">
+                            <label for="star4" class="star" id="st2"><i class="far fa-star"></i></label>
+                            <input type="radio" id="star3" name="rating" value="3" style="display:none;" onclick="updateStars(3)">
+                            <label for="star3" class="star" id="st3"><i class="far fa-star"></i></label>
+                            <input type="radio" id="star2" name="rating" value="2" style="display:none;" onclick="updateStars(2)">
+                            <label for="star2" class="star" id="st4"><i class="far fa-star"></i></label>
+                            <input type="radio" id="star1" name="rating" value="1" style="display:none;" onclick="updateStars(1)">
+                            <label for="star1" class="star" id="st5"><i class="far fa-star"></i></label>
+                        </div>
+                        <style>
+                            .rating-stars label:hover, .rating-stars label.active { color: #f1c40f; }
+                        </style>
+                        <script>
+                            function updateStars(rating) {
+                                const labels = document.querySelectorAll('.star');
+                                labels.forEach((l, index) => {
+                                    const icon = l.querySelector('i');
+                                    if(index >= (5 - rating)) {
+                                        icon.className = 'fas fa-star';
+                                    } else {
+                                        icon.className = 'far fa-star';
+                                    }
+                                });
+                            }
+                        </script>
+                        <textarea name="comment" placeholder="Tell us about your court experience..." required style="width: 100%; height: 100px; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 12px; color: #fff; margin-bottom: 20px; font-size: 1rem;"></textarea>
+                        <button type="submit" class="btn-submit" style="background: var(--primary-green); color: var(--black); border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%;">
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
