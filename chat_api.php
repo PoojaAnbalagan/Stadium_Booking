@@ -75,9 +75,9 @@ if (defined('OPENAI_API_KEY') && OPENAI_API_KEY !== 'sk-your-api-key-here') {
     if (strpos($lowerInput, 'hello') !== false || strpos($lowerInput, 'hi') !== false) {
         $reply = "Hi there! Ready to play?";
     } elseif (strpos($lowerInput, 'book') !== false || strpos($lowerInput, 'reservation') !== false) {
-        $reply = "To book a court, simply log in and select your preferred sport and time on the homepage! <a href='login.php' style='color:var(--primary-green)'>Login here</a>.";
+        $reply = "To book a court, simply log in and select your preferred sport and time on the homepage! You can login at: login.php";
     } elseif (strpos($lowerInput, 'price') !== false || strpos($lowerInput, 'cost') !== false) {
-        $reply = "Pricing varies by sport and time. <br>Football: ~$50/hr<br>Cricket: ~$60/hr<br>Tennis: ~$40/hr<br>You can see exact prices when booking.";
+        $reply = "Pricing varies by sport and time.\nFootball: ~$50/hr\nCricket: ~$60/hr\nTennis: ~$40/hr\nYou can see exact prices when booking.";
     } elseif (strpos($lowerInput, 'sport') !== false || strpos($lowerInput, 'game') !== false) {
         $reply = "We have Football, Cricket, Basketball, Tennis, and Volleyball courts available!";
     } elseif (strpos($lowerInput, 'location') !== false || strpos($lowerInput, 'where') !== false) {
