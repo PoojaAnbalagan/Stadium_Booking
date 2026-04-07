@@ -280,6 +280,8 @@ $court = mysqli_fetch_assoc($court_result);
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => document.body.classList.add('loaded'));
+
         let selectedMethod = null;
 
         function selectPayment(element, method) {
