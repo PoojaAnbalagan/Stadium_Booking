@@ -195,7 +195,7 @@ if (isset($_POST['cancel_booking'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard - Stadium Booking</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.2">
     <link rel="stylesheet" href="src/profile_revamp.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 </head>
@@ -219,7 +219,7 @@ if (isset($_POST['cancel_booking'])) {
         </div>
     </nav>
 
-    <div class="container">
+    <main class="main-content">
         <!-- User Profile Header -->
         <div class="card">
             <div class="profile-header-content">
@@ -433,7 +433,7 @@ if (isset($_POST['cancel_booking'])) {
                 </form>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // Page Transition

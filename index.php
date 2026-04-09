@@ -8,7 +8,7 @@ require_once 'config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBook - The Arena</title>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Small overrides or critical inline styles can stay if absolutely necessary, 
@@ -42,7 +42,7 @@ require_once 'config.php';
     </nav>
 
     <!-- Main Content -->
-    <div class="container">
+    <main class="main-content">
         <!-- Hero Section + Booking Bar -->
         <div class="hero reveal active hero-section">
             <div class="hero-content">
@@ -52,9 +52,7 @@ require_once 'config.php';
                 <h1 class="hero-title-outline">
                     YOUR GAME
                 </h1>
-                <p class="hero-subtitle">
-                    The ultimate indoor arena experience.
-                </p>
+                <!-- Hero Subtitle removed as requested -->
             </div>
 
             <!-- Booking Bar -->
@@ -99,9 +97,12 @@ require_once 'config.php';
                     </div>
 
                     <!-- Submit -->
-                    <button type="submit" class="btn btn-primary" style="height: 48px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
-                        BOOK NOW <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
-                    </button>
+                    <div class="booking-field">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn-book-bar">
+                            BOOK NOW <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -301,8 +302,7 @@ require_once 'config.php';
                 </div>
             <?php endif; ?>
         </div>
-    </div>
-</div>
+    </main>
     
     <!-- Site Footer -->
     <footer class="site-footer">

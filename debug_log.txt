@@ -64,3 +64,21 @@ Array
     [password] => admin123
 )
 
+POST Request:
+Array
+(
+    [action] => register
+    [full_name] => 22cds0412
+    [email] => 22cds0412@ms.sab.ac.lk
+    [phone] => 0771237780
+    [password] => 123456
+)
+
+POST Request:
+Array
+(
+    [action] => login
+    [email] => 22cds0412@ms.sab.ac.lk
+    [password] => 123456
+)
+

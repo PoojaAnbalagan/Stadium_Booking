@@ -28,15 +28,23 @@ html {
 
 /* ==================== RECOMMENDATIONS ==================== */
 .recommendations-section {
-    margin: 40px 0 60px;
+    margin: 40px auto 60px;
     position: relative;
     z-index: 10;
+    width: 90%;
+    max-width: 1200px;
 }
 
 .recommendations-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    width: 100%;
+}
+
+.recommendation-card {
+    grid-column: span 2;
+    /* ... remains flex for inner alignment */
 }
 
 .recommendation-card {
@@ -224,9 +232,16 @@ body.fade-out {
 
 /* ==================== LAYOUT ==================== */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 1700px;
+    width: 96%;
+    margin: 0px auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.main-content {
+    width: 100%;
     position: relative;
     z-index: 1;
 }
@@ -321,8 +336,6 @@ body.fade-out {
     color: var(--primary-green);
     font-size: 1.5rem;
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--light-gray);
-    padding-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -431,6 +444,7 @@ body.fade-out {
 }
 
 /* ==================== BOOKING LISTINGS ==================== */
+
 .booking-item {
     background: var(--medium-gray);
     border-radius: 15px;
@@ -560,11 +574,12 @@ body.fade-out {
 /* Bento Grid */
 .bento-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 280px);
-    /* Fixed height rows */
-    gap: 20px;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto;
+    gap: 25px;
     padding: 60px 0;
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -614,20 +629,16 @@ body.fade-out {
     z-index: 10;
 }
 
-/* Grid Spans */
-.bento-large {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
+/* Responsive Card Sizing */
+.bento-large,
 .bento-tall {
-    grid-column: span 1;
-    grid-row: span 2;
+    grid-column: span 2;
+    height: 350px;
 }
 
 .bento-normal {
     grid-column: span 1;
-    grid-row: span 1;
+    height: 350px;
 }
 
 .bento-item.locked {
@@ -729,11 +740,17 @@ body.fade-out {
 
 /* Stats Counter */
 .stats-strip {
-    display: flex;
-    justify-content: space-around;
-    padding: 60px 0;
-    margin-top: 60px;
-    background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.05), transparent);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 60px 40px;
+    margin: 60px auto;
+    width: 90%;
+    max-width: 1200px;
+    background: rgba(34, 34, 34, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 30px;
 }
 
 .stat-item {
@@ -741,11 +758,12 @@ body.fade-out {
 }
 
 .stat-number {
-    font-size: 48px;
+    font-size: 64px;
     font-weight: 800;
     color: var(--primary-green);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     display: block;
+    line-height: 1;
 }
 
 .stat-label {
@@ -819,6 +837,54 @@ body.fade-out {
     color: var(--white);
 }
 
+/* ==================== HERO SECTION ==================== */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 140px 20px 80px; /* Increased padding */
+    min-height: 500px; /* Prevent overlapping */
+    position: relative;
+    z-index: 5;
+    width: 100%;
+}
+
+.hero-content {
+    margin-bottom: 60px;
+    width: 100%;
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 800;
+    line-height: 0.85;
+    letter-spacing: -3px;
+    margin: 0;
+    color: var(--white); /* Solid fallback */
+    text-transform: uppercase;
+}
+
+.hero-title-main {
+    margin-bottom: 0px;
+}
+
+.hero-title-outline {
+    margin-top: 5px;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.4);
+    opacity: 0.8;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: var(--text-gray);
+    margin-top: 25px;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* ==================== BOOKING BAR STYLES ==================== */
 .booking-bar-container {
     background: rgba(20, 20, 20, 0.5);
@@ -834,9 +900,11 @@ body.fade-out {
         0 20px 50px rgba(0, 0, 0, 0.5),
         0 0 30px rgba(0, 255, 136, 0.1);
     /* Subtle glow */
-    max-width: 1100px;
+    max-width: 1200px;
     /* Wider */
-    width: 95%;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
@@ -856,9 +924,9 @@ body.fade-out {
 
 .booking-form-inline {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    align-items: end;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    align-items: flex-end;
 }
 
 .booking-field label {
@@ -883,15 +951,15 @@ body.fade-out {
 
 .booking-input {
     width: 100%;
-    background: #333;
-    border: 1px solid #444;
+    height: 54px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 12px 12px 12px 36px;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 0 15px 0 45px;
+    border-radius: 12px;
+    font-size: 1rem;
     transition: var(--transition);
     color-scheme: dark;
-    /* Forces browser picker to be dark */
 }
 
 .booking-input::-webkit-calendar-picker-indicator {
@@ -904,6 +972,29 @@ body.fade-out {
     outline: none;
     border-color: var(--primary-green);
     background: #222;
+}
+
+.btn-book-bar {
+    background: var(--primary-green);
+    color: var(--black);
+    border: none;
+    padding: 0 25px;
+    height: 54px;
+    border-radius: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.btn-book-bar:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
 }
 
 /* Section Headers */
@@ -927,9 +1018,12 @@ body.fade-out {
 /* Features Section */
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
     margin-bottom: 80px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .feature-card {
@@ -971,15 +1065,28 @@ body.fade-out {
 /* Testimonials */
 .testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: stretch; /* Ensure all cards stretch to same height */
 }
 
 .testimonial-card {
-    background: var(--dark-gray);
-    padding: 30px;
-    border-radius: 20px;
+    background: rgba(34, 34, 34, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 35px;
+    border-radius: 24px;
     border-left: 4px solid var(--primary-green);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.testimonial-card .quote {
+    flex-grow: 1; /* Pushes content to fill space */
 }
 
 .user-profile {
@@ -1238,10 +1345,14 @@ body.fade-out {
         grid-template-columns: 1fr;
         padding: 40px 20px;
     }
+    .bento-large, .bento-tall, .bento-normal {
+        grid-column: span 1 !important;
+        height: 300px;
+    }
 
     /* Stats */
     .stats-strip {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 40px;
     }
 
@@ -1253,6 +1364,19 @@ body.fade-out {
 
     .footer-links a:hover {
         padding-left: 0;
+    }
+
+    /* Recommendations */
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+    .recommendation-card {
+        grid-column: span 1;
+    }
+
+    /* Testimonials */
+    .testimonials-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1653,7 +1777,7 @@ body.fade-out {
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     border-radius: 30px;
     padding: 48px;
-    max-width: 850px;
+    max-width: 1000px;
     margin: 0 auto;
     animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
@@ -2141,87 +2265,4 @@ body.fade-out {
     }
 }
 
-/* ==================== RECOMMENDATIONS ==================== */
-.recommendations-section {
-    margin: 40px 0 60px;
-    position: relative;
-    z-index: 10;
-}
-
-.recommendations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.recommendation-card {
-    background: rgba(34, 34, 34, 0.4);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(0, 255, 136, 0.2);
-    border-radius: 20px;
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: var(--transition);
-    text-decoration: none;
-    color: var(--white);
-    position: relative;
-    overflow: hidden;
-}
-
-.recommendation-card:hover {
-    background: rgba(44, 44, 44, 0.6);
-    transform: translateY(-5px);
-    border-color: var(--primary-green);
-    box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
-}
-
-.rec-type-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: rgba(0, 255, 136, 0.1);
-    color: var(--primary-green);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 800;
-}
-
-.rec-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 255, 136, 0.1);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--primary-green);
-}
-
-.rec-content h4 {
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.rec-content p {
-    color: var(--text-gray);
-    font-size: 0.85rem;
-}
-
-.rec-action {
-    margin-left: auto;
-    color: var(--primary-green);
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: var(--transition);
-}
-
-.recommendation-card:hover .rec-action {
-    opacity: 1;
-    transform: translateX(0);
-}
+/* ==================== END OF STYLESHEET ==================== */
