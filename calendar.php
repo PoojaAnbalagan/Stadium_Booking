@@ -72,7 +72,20 @@ for ($hour = 8; $hour < 22; $hour++) {
                 <input type="hidden" name="court_id" value="<?= $court_id ?>">
                 <input type="hidden" name="booking_date" value="<?= $booking_date ?>">
                 <input type="hidden" name="start_time" id="selectedTimeInput">
-                <input type="hidden" name="price" value="<?= $court['price_per_hour'] ?>">
+                <input type="hidden" name="price" id="basePrice" value="<?= $court['price_per_hour'] ?>">
+
+                <!-- Duration Selector -->
+                <div class="duration-selector glass-panel reveal active" style="margin-bottom: 30px; padding: 20px; border-radius: 15px;">
+                    <label style="color:var(--text-gray); font-weight:bold; display:block; margin-bottom:10px;">HOW LONG WILL YOU PLAY?</label>
+                    <div class="duration-options">
+                        <select name="duration" id="bookingDuration" class="booking-input" style="background:rgba(255,255,255,0.05); color:var(--white); border:1px solid rgba(255,255,255,0.1); width:100%; padding:12px; border-radius:10px;" onchange="updateTotalPrice()">
+                            <option value="1">1 Hour (Standard)</option>
+                            <option value="2">2 Hours</option>
+                            <option value="3">3 Hours</option>
+                            <option value="4">4 Hours</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="slot-grid">
                     <?php foreach ($time_slots as $slot): 
@@ -114,10 +127,22 @@ for ($hour = 8; $hour < 22; $hour++) {
         // ... link transition code ...
 
         function selectSlot(el, time) {
-            // ... existing code ...
+            document.querySelectorAll('.time-box').forEach(box => box.classList.remove('selected'));
             el.classList.add('selected');
             document.getElementById('selectedTimeInput').value = time;
             document.getElementById('bookBtn').disabled = false;
+            updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
+            const basePrice = parseFloat(document.getElementById('basePrice').value);
+            const duration = parseInt(document.getElementById('bookingDuration').value);
+            const total = basePrice * duration;
+            const bookBtn = document.getElementById('bookBtn');
+            
+            if (!bookBtn.disabled) {
+                bookBtn.innerHTML = `PROCEED TO BOOK ($${total})`;
+            }
         }
 
         function submitBooking() {

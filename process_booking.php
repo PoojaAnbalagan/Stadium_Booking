@@ -16,23 +16,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
     $price = floatval($_POST['price']);
     $payment_method = trim($_POST['payment_method']);
     
-    // Calculate end time (1 hour after start)
-    $end_time = date('H:i:s', strtotime($start_time . ' +1 hour'));
+    $duration = intval($_POST['duration'] ?? 1);
     
-    // Check if slot is still available (Using Prepared Statement)
+    // Calculate end time based on duration
+    $end_time = date('H:i:s', strtotime($start_time . " +$duration hour"));
+    
+    // Check if ANY part of this slot is booked (Proper Overlap Check)
+    // Overlap exists if: (Existing_Start < New_End) AND (New_Start < Existing_End)
     $check_query = "SELECT id FROM bookings 
                     WHERE court_id = ? 
                     AND booking_date = ? 
-                    AND start_time = ? 
+                    AND start_time < ? 
+                    AND end_time > ? 
                     AND status = 'confirmed'";
     
     $check_stmt = mysqli_prepare($conn, $check_query);
-    mysqli_stmt_bind_param($check_stmt, "iss", $court_id, $booking_date, $start_time);
+    mysqli_stmt_bind_param($check_stmt, "isss", $court_id, $booking_date, $end_time, $start_time);
     mysqli_stmt_execute($check_stmt);
     mysqli_stmt_store_result($check_stmt);
     
     if (mysqli_stmt_num_rows($check_stmt) > 0) {
-        $error = 'This slot is no longer available!';
+        $error = 'One or more hours in this selection are already booked!';
         mysqli_stmt_close($check_stmt);
     } else {
         mysqli_stmt_close($check_stmt);
@@ -147,7 +151,9 @@ if (!isset($_POST['court_id']) || !isset($_POST['booking_date']) || !isset($_POS
 $court_id = intval($_POST['court_id']);
 $booking_date = sanitize($_POST['booking_date']);
 $start_time = sanitize($_POST['start_time']);
-$price = floatval($_POST['price']);
+$duration = intval($_POST['duration'] ?? 1);
+$base_price = floatval($_POST['price']);
+$price = $base_price * $duration;
 
 // Fetch court details
 $court_query = "SELECT c.*, s.name as sport_name 
@@ -217,11 +223,11 @@ $court = mysqli_fetch_assoc($court_result);
                     </div>
                     <div class="summary-row">
                         <span class="summary-label">Time:</span>
-                        <span class="summary-value"><?= date('g:i A', strtotime($start_time)) ?> - <?= date('g:i A', strtotime($start_time . ' +1 hour')) ?></span>
+                        <span class="summary-value"><?= date('g:i A', strtotime($start_time)) ?> - <?= date('g:i A', strtotime($start_time . " +$duration hour")) ?></span>
                     </div>
                     <div class="summary-row">
                         <span class="summary-label">Duration:</span>
-                        <span class="summary-value">1 Hour</span>
+                        <span class="summary-value"><?= $duration ?> <?= $duration > 1 ? 'Hours' : 'Hour' ?></span>
                     </div>
                     <div class="summary-row">
                         <span class="summary-label">Total Amount:</span>
@@ -234,7 +240,8 @@ $court = mysqli_fetch_assoc($court_result);
                     <input type="hidden" name="court_id" value="<?= $court_id ?>">
                     <input type="hidden" name="booking_date" value="<?= $booking_date ?>">
                     <input type="hidden" name="start_time" value="<?= $start_time ?>">
-                    <input type="hidden" name="price" value="<?= $price ?>">
+                    <input type="hidden" name="duration" value="<?= $duration ?>">
+                    <input type="hidden" name="price" value="<?= $base_price ?>">
                     <input type="hidden" name="payment_method" id="selected_payment" required>
 
                     <div class="payment-methods">
