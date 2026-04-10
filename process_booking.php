@@ -1,6 +1,15 @@
 <?php
 require_once 'config.php';
 
+// PHPMailer Classes
+require 'lib/PHPMailer/Exception.php';
+require 'lib/PHPMailer/PHPMailer.php';
+require 'lib/PHPMailer/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
 if (!isLoggedIn()) {
     redirect('login.php');
 }
@@ -64,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
             
             // Send Email Notification
             // Fetch user info
-            $user_email_query = "SELECT email, full_name FROM users WHERE id = ?";
+            $user_email_query = "SELECT email, full_name, phone FROM users WHERE id = ?";
             $user_stmt = mysqli_prepare($conn, $user_email_query);
             mysqli_stmt_bind_param($user_stmt, "i", $user_id);
             mysqli_stmt_execute($user_stmt);
@@ -86,7 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
 
             $to = $user_data['email'];
             $subject = "Booking Confirmation - InBook Sports";
-            $message = "
+            
+            // Email HTML Template
+            $email_message = "
             <html>
             <head>
                 <title>Booking Confirmation</title>
@@ -98,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
                     .details { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #00ff88; }
                     .details p { margin: 8px 0; }
                     .footer { margin-top: 30px; font-size: 12px; color: #888888; text-align: center; }
-                    .highlight { color: #00cc6a; font-weight: bold; }
                 </style>
             </head>
             <body>
@@ -108,32 +118,75 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
                     <p>Your booking at <strong>InBook Sports</strong> has been successfully confirmed.</p>
                     
                     <div class='details'>
-                        <p><strong>Transaction ID:</strong> $transaction_id</p>
                         <p><strong>Sport:</strong> {$court_data['sport_name']}</p>
                         <p><strong>Court:</strong> {$court_data['court_name']}</p>
                         <p><strong>Date:</strong> " . date('F j, Y', strtotime($booking_date)) . "</p>
-                        <p><strong>Time:</strong> " . date('g:i A', strtotime($start_time)) . " - " . date('g:i A', strtotime($end_time)) . "</p>
+                        <p><strong>Time:</strong> " . date('g:i A', strtotime($start_time)) . "</p>
                         <p><strong>Total Price:</strong> $" . number_format($price, 2) . "</p>
-                        <p><strong>Payment Method:</strong> " . ucfirst(str_replace('_', ' ', $payment_method)) . "</p>
                     </div>
 
                     <p>We look forward to seeing you at the arena! 🏟️</p>
-                    
-                    <div class='footer'>
-                        <p>&copy; " . date('Y') . " InBook Sports. All rights reserved.</p>
-                    </div>
                 </div>
             </body>
-            </html>
-            ";
+            </html>";
 
-            // Headers for HTML email
-            $headers = "MIME-Version: 1.0" . "\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: InBook Sports <no-reply@inbook.com>' . "\r\n";
+            // 1. Send Email Notification
+            if (defined('SMTP_USER') && SMTP_USER !== 'your-email@gmail.com') {
+                $mail = new PHPMailer(true);
+                try {
+                    $mail->isSMTP();
+                    $mail->Host       = SMTP_HOST;
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = SMTP_USER;
+                    $mail->Password   = SMTP_PASS;
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port       = SMTP_PORT;
 
-            // Send email
-            mail($to, $subject, $message, $headers);
+                    $mail->setFrom(SMTP_FROM, SMTP_NAME);
+                    $mail->addAddress($to, $user_data['full_name']);
+                    $mail->isHTML(true);
+                    $mail->Subject = $subject;
+                    $mail->Body    = $email_message;
+                    $mail->send();
+                } catch (Exception $e) {
+                    error_log("PHPMailer Error: " . $mail->ErrorInfo);
+                }
+            }
+
+            // 2. Send SMS Notification via Twilio REST API
+            if (defined('SMS_ENABLED') && SMS_ENABLED) {
+                $customer_phone = $user_data['phone'];
+                $sms_message = "Hi {$user_data['full_name']}, your booking for {$court_data['court_name']} on " . date('M j', strtotime($booking_date)) . " at " . date('g:i A', strtotime($start_time)) . " is confirmed! - InBook Sports";
+                
+                $id = TWILIO_SID;
+                $token = TWILIO_TOKEN;
+                $from = TWILIO_FROM;
+                
+                $url = "https://api.twilio.com/2010-04-01/Accounts/$id/Messages.json";
+                
+                $data = [
+                    'From' => $from,
+                    'To' => $customer_phone,
+                    'Body' => $sms_message,
+                ];
+                
+                $post = http_build_query($data);
+                $x = curl_init($url);
+                curl_setopt($x, CURLOPT_POST, true);
+                curl_setopt($x, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($x, CURLOPT_SSL_VERIFYPEER, false); // For local testing
+                curl_setopt($x, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($x, CURLOPT_USERPWD, "$id:$token");
+                curl_setopt($x, CURLOPT_POSTFIELDS, $post);
+                
+                $response = curl_exec($x);
+                $err = curl_error($x);
+                curl_close($x);
+                
+                // Detailed debug logging to help identify the problem
+                $log_msg = "[" . date('Y-m-d H:i:s') . "] TO: $customer_phone | Response: " . $response . ($err ? " | cURL Error: $err" : "") . "\n";
+                file_put_contents('debug_log.txt', $log_msg, FILE_APPEND);
+            }
 
             $_SESSION['booking_success'] = $booking_id;
             redirect('booking_confirmation.php?id=' . $booking_id);

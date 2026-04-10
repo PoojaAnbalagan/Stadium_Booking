@@ -1,5 +1,6 @@
 <?php
 // Database Configuration
+// Twilio verification code : S4C5SARSLMX7DUUXJAYVNJKG
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -11,7 +12,21 @@ define('GOOGLE_CLIENT_SECRET', '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');
 define('GOOGLE_REDIRECT_URI', 'http://localhost/Stadium_Booking/social_auth.php');
 
 // OpenAI Configuration - Replace with your API Key
-// define('OPENAI_API_KEY', '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');
+// define('OPENAI_API_KEY', 'sk-...');
+
+// SMTP Configuration (for PHPMailer)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_USER', 'support.inbook@gmail.com'); // UPDATE THIS TO YOUR GMAIL
+define('SMTP_PASS', 'yieg asgr kicz bzug'); // Fixed missing quote
+define('SMTP_PORT', 587);
+define('SMTP_FROM', 'no-reply@inbook.com');
+define('SMTP_NAME', 'InBook Sports');
+
+// SMS Configuration (Twilio REST API)
+define('SMS_ENABLED', true); 
+define('TWILIO_SID', 'AC2eed68d5d1c98dbca0622e603bebd335');
+define('TWILIO_TOKEN', '990e713fd9b11997eef983c13844e1d3');
+define('TWILIO_FROM', '+16414006553');
 
 // Create connection
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
