@@ -9,7 +9,7 @@ if (!isLoggedIn()) {
 $booking_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Fetch booking details
-$query = "SELECT b.*, c.name as court_name, c.type as court_type, 
+$query = "SELECT b.*, c.name as court_name, c.type as court_type, c.price_per_hour, 
           s.name as sport_name, u.full_name, u.email
           FROM bookings b
           JOIN courts c ON b.court_id = c.id
@@ -579,7 +579,15 @@ if (!$booking) {
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Duration:</span>
-                        <span class="detail-value">1 Hour</span>
+                        <span class="detail-value">
+                            <?php 
+                                $start = strtotime($booking['start_time']);
+                                $end = strtotime($booking['end_time']);
+                                $diff = abs($end - $start);
+                                $hours = round($diff / 3600);
+                                echo $hours . ($hours > 1 ? ' Hours' : ' Hour');
+                            ?>
+                        </span>
                     </div>
                 </div>
 
@@ -588,7 +596,17 @@ if (!$booking) {
                     <h3><i class="fas fa-credit-card"></i> Payment</h3>
                     <div class="detail-row">
                         <span class="detail-label">Amount Paid:</span>
-                        <span class="detail-value">$<?= number_format($booking['total_price'], 2) ?></span>
+                        <span class="detail-value">
+                            <?php
+                                $start = strtotime($booking['start_time']);
+                                $end = strtotime($booking['end_time']);
+                                $hours = round(abs($end - $start) / 3600);
+                                $total = $hours * ($booking['price_per_hour'] ?? 0);
+                                // Fallback to DB total if calculation fails or is 0
+                                $display_total = ($total > 0) ? $total : $booking['total_price'];
+                                echo '$' . number_format($display_total, 2);
+                            ?>
+                        </span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Payment Method:</span>

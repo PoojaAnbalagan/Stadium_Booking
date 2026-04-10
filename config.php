@@ -22,11 +22,7 @@ define('SMTP_PORT', 587);
 define('SMTP_FROM', 'no-reply@inbook.com');
 define('SMTP_NAME', 'InBook Sports');
 
-// SMS Configuration (Twilio REST API)
-define('SMS_ENABLED', true); 
-define('TWILIO_SID', 'AC2eed68d5d1c98dbca0622e603bebd335');
-define('TWILIO_TOKEN', '990e713fd9b11997eef983c13844e1d3');
-define('TWILIO_FROM', '+16414006553');
+
 
 // Create connection
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);

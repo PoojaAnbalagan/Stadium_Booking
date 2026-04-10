@@ -22,10 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
     $court_id = intval($_POST['court_id']);
     $booking_date = trim($_POST['booking_date']); // Basic trim, handled by prepared stmt
     $start_time = trim($_POST['start_time']);
-    $price = floatval($_POST['price']);
+    $base_price = floatval($_POST['price']);
     $payment_method = trim($_POST['payment_method']);
     
     $duration = intval($_POST['duration'] ?? 1);
+    $total_price = $base_price * $duration;
     
     // Calculate end time based on duration
     $end_time = date('H:i:s', strtotime($start_time . " +$duration hour"));
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
         $insert_stmt = mysqli_prepare($conn, $insert_query);
         mysqli_stmt_bind_param($insert_stmt, "iisssdssss", 
             $user_id, $court_id, $booking_date, $start_time, $end_time, 
-            $price, $payment_status, $payment_method, $transaction_id, $status
+            $total_price, $payment_status, $payment_method, $transaction_id, $status
         );
         
         if (mysqli_stmt_execute($insert_stmt)) {
@@ -122,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['process_payment'])) {
                         <p><strong>Court:</strong> {$court_data['court_name']}</p>
                         <p><strong>Date:</strong> " . date('F j, Y', strtotime($booking_date)) . "</p>
                         <p><strong>Time:</strong> " . date('g:i A', strtotime($start_time)) . "</p>
-                        <p><strong>Total Price:</strong> $" . number_format($price, 2) . "</p>
+                        <p><strong>Total Price:</strong> $" . number_format($total_price, 2) . "</p>
                     </div>
 
                     <p>We look forward to seeing you at the arena! 🏟️</p>
