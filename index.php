@@ -1,5 +1,35 @@
 <?php
 require_once 'config.php';
+require_once 'get_recommendations.php';
+
+// 1. Fetch dynamic sports list with court counts and minimum price
+$sports_query = "SELECT s.id, s.name, 
+                        COUNT(c.id) as court_count, 
+                        COALESCE(MIN(c.price_per_hour), 0) as min_price
+                 FROM sports s 
+                 LEFT JOIN courts c ON s.id = c.sport_id 
+                 GROUP BY s.id, s.name 
+                 ORDER BY court_count DESC, s.name ASC";
+$sports_result = mysqli_query($conn, $sports_query);
+$sports_list = [];
+if ($sports_result) {
+    while ($row = mysqli_fetch_assoc($sports_result)) {
+        $sports_list[] = $row;
+    }
+}
+
+// 2. Fetch live stats
+$stat_courts_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM courts");
+$stat_courts = ($stat_courts_res) ? (int)mysqli_fetch_assoc($stat_courts_res)['total'] : 0;
+
+$stat_users_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM users");
+$stat_users = ($stat_users_res) ? (int)mysqli_fetch_assoc($stat_users_res)['total'] : 0;
+
+$stat_bookings_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookings WHERE status = 'confirmed'");
+$stat_bookings = ($stat_bookings_res) ? (int)mysqli_fetch_assoc($stat_bookings_res)['total'] : 0;
+
+// 3. Fetch dynamic recommendations
+$recs = getRecommendations();
 ?>
 
 <!DOCTYPE html>
@@ -76,11 +106,9 @@ require_once 'config.php';
                             <i class="fas fa-running"></i>
                             <select name="sport" id="barSport" class="booking-input" onchange="loadBarCourts(this.value)" required>
                                 <option value="">Select Sport...</option>
-                                <option value="1">Basketball</option>
-                                <option value="2">Badminton</option>
-                                <option value="3">Tennis</option>
-                                <option value="4">Volleyball</option>
-                                <option value="5">Cricket</option>
+                                <?php foreach ($sports_list as $sport_item): ?>
+                                    <option value="<?= (int)$sport_item['id'] ?>"><?= htmlspecialchars($sport_item['name']) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -105,16 +133,15 @@ require_once 'config.php';
                     </div>
                 </form>
             </div>
+        </div>
 
         <!-- Recommendations Section -->
-        <?php 
-        require_once 'get_recommendations.php';
-        $recs = getRecommendations();
-        ?>
         <div class="recommendations-section reveal active">
             <div class="recommendations-grid">
-                <?php if (isset($recs['personalized'])): ?>
-                    <a href="calendar.php?sport=<?= $recs['personalized']['sport_id'] ?>&court=<?= $recs['personalized']['court_id'] ?>&date=<?= date('Y-m-d') ?>" class="recommendation-card">
+                <?php if (isset($recs['personalized'])): 
+                    $p_url = "calendar.php?sport=" . $recs['personalized']['sport_id'] . "&court=" . $recs['personalized']['court_id'] . "&date=" . date('Y-m-d');
+                ?>
+                    <a href="<?= isLoggedIn() ? $p_url : 'login.php?redirect=' . urlencode($p_url) ?>" class="recommendation-card" <?= !isLoggedIn() ? 'onclick="showToast();"' : '' ?>>
                         <div class="rec-type-badge"><?= $recs['personalized']['type'] ?></div>
                         <div class="rec-icon">
                             <i class="fas <?= $recs['personalized']['icon'] ?>"></i>
@@ -129,8 +156,10 @@ require_once 'config.php';
                     </a>
                 <?php endif; ?>
 
-                <?php if (isset($recs['trending'])): ?>
-                    <a href="calendar.php?court=<?= $recs['trending']['court_id'] ?>&date=<?= date('Y-m-d') ?>&sport=<?= $recs['trending']['sport_id'] ?>" class="recommendation-card">
+                <?php if (isset($recs['trending'])): 
+                    $t_url = "calendar.php?court=" . $recs['trending']['court_id'] . "&date=" . date('Y-m-d') . "&sport=" . $recs['trending']['sport_id'];
+                ?>
+                    <a href="<?= isLoggedIn() ? $t_url : 'login.php?redirect=' . urlencode($t_url) ?>" class="recommendation-card" <?= !isLoggedIn() ? 'onclick="showToast();"' : '' ?>>
                         <div class="rec-type-badge"><?= $recs['trending']['type'] ?></div>
                         <div class="rec-icon">
                             <i class="fas <?= $recs['trending']['icon'] ?>"></i>
@@ -149,78 +178,48 @@ require_once 'config.php';
 
         <!-- The Bento Grid (Sports Selection) -->
         <div class="bento-grid">
-            <!-- Football (Large) - Key Sport -->
-            <div class="bento-item bento-large reveal <?= !isLoggedIn() ? 'locked' : '' ?>" 
-                 data-id="1" data-sport="football" onclick="handleCardClick(this)">
-                <div class="bento-content">
-                    <i class="fas fa-futbol sport-icon icon-large"></i>
-                    <h2 class="sport-title">Football</h2>
-                    <p style="color:var(--text-gray); margin-top:10px;">Premium Turf</p>
-                </div>
-                <?php if (!isLoggedIn()): ?>
-                    <div style="position:absolute; bottom:20px; color:var(--text-gray); font-size:24px;">
-                        <i class="fas fa-lock"></i>
+            <?php 
+            $layout_classes = ['bento-large', 'bento-tall', 'bento-normal', 'bento-normal', 'bento-tall', 'bento-large'];
+            foreach ($sports_list as $idx => $sport_item):
+                $layout_class = $layout_classes[$idx % count($layout_classes)];
+                $icon_class = getSportIcon($sport_item['name']);
+                if ($sport_item['court_count'] > 0) {
+                    $subtitle = $sport_item['court_count'] . ($sport_item['court_count'] == 1 ? ' Court' : ' Courts') . ' • From $' . number_format($sport_item['min_price'], 0) . '/hr';
+                } else {
+                    $subtitle = 'Courts Coming Soon';
+                }
+            ?>
+                <div class="bento-item <?= $layout_class ?> reveal <?= !isLoggedIn() ? 'locked' : '' ?>" 
+                     data-id="<?= (int)$sport_item['id'] ?>" 
+                     data-sport="<?= htmlspecialchars(strtolower($sport_item['name'])) ?>" 
+                     onclick="handleCardClick(this)">
+                    <div class="bento-content">
+                        <i class="fas <?= $icon_class ?> sport-icon icon-large"></i>
+                        <h2 class="sport-title"><?= htmlspecialchars($sport_item['name']) ?></h2>
+                        <p style="color:var(--text-gray); margin-top:10px;"><?= htmlspecialchars($subtitle) ?></p>
                     </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Cricket (Tall) - Key Sport -->
-            <div class="bento-item bento-tall reveal <?= !isLoggedIn() ? 'locked' : '' ?>" 
-                 data-id="4" data-sport="cricket" onclick="handleCardClick(this)">
-                <div class="bento-content">
-                    <i class="fas fa-baseball-bat-ball sport-icon icon-large"></i>
-                    <h2 class="sport-title">Cricket</h2>
-                    <p style="color:var(--text-gray); margin-top:10px;">Pro Pitch</p>
+                    <?php if (!isLoggedIn()): ?>
+                        <div style="position:absolute; bottom:20px; color:var(--text-gray); font-size:24px;">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <?php if (!isLoggedIn()): ?>
-                    <div style="position:absolute; bottom:20px; color:var(--text-gray); font-size:24px;">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Basketball (Normal) -->
-            <div class="bento-item bento-normal reveal <?= !isLoggedIn() ? 'locked' : '' ?>" 
-                 data-id="2" data-sport="basketball" onclick="handleCardClick(this)">
-                <div class="bento-content">
-                    <i class="fas fa-basketball sport-icon icon-medium"></i>
-                    <h2 class="sport-title" style="font-size: 1.2rem;">Basketball</h2>
-                </div>
-                <?php if (!isLoggedIn()): ?>
-                    <div style="position:absolute; bottom:20px; color:var(--text-gray); font-size:24px;">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Tennis (Normal) -->
-            <div class="bento-item bento-normal reveal <?= !isLoggedIn() ? 'locked' : '' ?>" 
-                 data-id="3" data-sport="tennis" onclick="handleCardClick(this)">
-                <div class="bento-content">
-                    <i class="fas fa-table-tennis-paddle-ball sport-icon" style="font-size: 50px;"></i>
-                    <h2 class="sport-title" style="font-size: 1.2rem;">Tennis</h2>
-                </div>
-                <?php if (!isLoggedIn()): ?>
-                    <div style="position:absolute; bottom:20px; color:var(--text-gray); font-size:24px;">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                <?php endif; ?>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <!-- Live Stats Ticker -->
         <div class="stats-strip glass-panel reveal" style="border-radius: 20px;">
             <div class="stat-item">
-                <span class="stat-number" data-target="50">0</span>
-                <span class="stat-label">Courts</span>
+                <span class="stat-number" data-target="<?= max($stat_courts, 1) ?>">0</span>
+                <span class="stat-label">Courts Available</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number" data-target="1200">0</span>
-                <span class="stat-label">Players</span>
+                <span class="stat-number" data-target="<?= max($stat_users, 1) ?>">0</span>
+                <span class="stat-label">Active Players</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number" data-target="24">0</span>
-                <span class="stat-label">Hours Open</span>
+                <span class="stat-number" data-target="<?= max($stat_bookings, 1) ?>">0</span>
+                <span class="stat-label">Bookings Made</span>
             </div>
         </div>
 
@@ -313,11 +312,11 @@ require_once 'config.php';
                     <p>The ultimate platform for sports enthusiasts to book and play. Premium courts, instant confirmation.</p>
                 </div>
                 <div class="footer-links">
-                    <h3>Quick Links</h3>
+                    <h3>Sports</h3>
                     <ul>
-                        <li><a href="index.php">Home</a></li>
-                        <li><a href="index.php">Book Court</a></li>
-                        <li><a href="login.php">Login</a></li>
+                        <?php foreach (array_slice($sports_list, 0, 4) as $s_item): ?>
+                            <li><a href="#bookingBarForm" onclick="document.getElementById('barSport').value = '<?= $s_item['id'] ?>'; loadBarCourts('<?= $s_item['id'] ?>');"><?= htmlspecialchars($s_item['name']) ?></a></li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
                 <div class="footer-links">
@@ -525,16 +524,19 @@ require_once 'config.php';
                 });
         }
 
-        /* 
-        // Removed blocking check. Guests can see calendar, but must login to book.
         document.getElementById('bookingBarForm').addEventListener('submit', function(e) {
             if (!isLoggedIn) {
                 e.preventDefault();
                 showToast(); 
-                setTimeout(() => window.location.href = 'login.php', 1500);
+                const sport = document.getElementById('barSport').value;
+                const court = document.getElementById('barCourt').value;
+                const date = document.querySelector('input[name="date"]').value;
+                const targetUrl = `calendar.php?sport=${sport}&court=${court}&date=${date}`;
+                setTimeout(() => {
+                    window.location.href = 'login.php?redirect=' + encodeURIComponent(targetUrl);
+                }, 1000);
             }
         });
-        */
 
         // ================= Stats ================= //
         const stats = document.querySelectorAll('.stat-number');

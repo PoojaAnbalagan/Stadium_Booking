@@ -844,8 +844,10 @@ body.fade-out {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 140px 20px 80px; /* Increased padding */
-    min-height: 500px; /* Prevent overlapping */
+    padding: 140px 20px 80px;
+    /* Increased padding */
+    min-height: 500px;
+    /* Prevent overlapping */
     position: relative;
     z-index: 5;
     width: 100%;
@@ -862,7 +864,8 @@ body.fade-out {
     line-height: 0.85;
     letter-spacing: -3px;
     margin: 0;
-    color: var(--white); /* Solid fallback */
+    color: var(--white);
+    /* Solid fallback */
     text-transform: uppercase;
 }
 
@@ -872,7 +875,7 @@ body.fade-out {
 
 .hero-title-outline {
     margin-top: 5px;
-    -webkit-text-stroke: 1px rgba(255,255,255,0.4);
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
     opacity: 0.8;
 }
 
@@ -1070,7 +1073,8 @@ body.fade-out {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
-    align-items: stretch; /* Ensure all cards stretch to same height */
+    align-items: stretch;
+    /* Ensure all cards stretch to same height */
 }
 
 .testimonial-card {
@@ -1086,7 +1090,8 @@ body.fade-out {
 }
 
 .testimonial-card .quote {
-    flex-grow: 1; /* Pushes content to fill space */
+    flex-grow: 1;
+    /* Pushes content to fill space */
 }
 
 .user-profile {
@@ -1345,7 +1350,10 @@ body.fade-out {
         grid-template-columns: 1fr;
         padding: 40px 20px;
     }
-    .bento-large, .bento-tall, .bento-normal {
+
+    .bento-large,
+    .bento-tall,
+    .bento-normal {
         grid-column: span 1 !important;
         height: 300px;
     }
@@ -1370,6 +1378,7 @@ body.fade-out {
     .recommendations-grid {
         grid-template-columns: 1fr;
     }
+
     .recommendation-card {
         grid-column: span 1;
     }

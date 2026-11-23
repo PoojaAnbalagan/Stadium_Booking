@@ -64,29 +64,42 @@ function getRecommendations() {
             'icon' => getSportIcon($trending['sport_name'])
         ];
     } else {
-        // Fallback popular choice if no recent bookings
-        $recommendations['trending'] = [
-            'type' => 'Recommended',
-            'title' => 'Main Football Turf',
-            'subtitle' => 'Our highest rated premium facility.',
-            'court_id' => 1,
-            'sport_name' => 'Football',
-            'icon' => 'fa-futbol'
-        ];
+        // Fallback dynamic choice: fetch the premier court from database
+        $fallback_query = "SELECT c.id as court_id, c.name as court_name, s.name as sport_name, s.id as sport_id 
+                           FROM courts c 
+                           JOIN sports s ON c.sport_id = s.id 
+                           ORDER BY c.price_per_hour DESC 
+                           LIMIT 1";
+        $fallback_res = mysqli_query($conn, $fallback_query);
+        if ($fallback_res && ($fallback_court = mysqli_fetch_assoc($fallback_res))) {
+            $recommendations['trending'] = [
+                'type' => 'Recommended',
+                'title' => $fallback_court['court_name'],
+                'subtitle' => 'Our premier facility for ' . $fallback_court['sport_name'] . '.',
+                'court_id' => $fallback_court['court_id'],
+                'sport_id' => $fallback_court['sport_id'],
+                'sport_name' => $fallback_court['sport_name'],
+                'icon' => getSportIcon($fallback_court['sport_name'])
+            ];
+        }
     }
 
     return $recommendations;
 }
 
 function getSportIcon($name) {
+    $normalized = strtolower(trim($name));
     $icons = [
-        'Football' => 'fa-futbol',
-        'Basketball' => 'fa-basketball',
-        'Tennis' => 'fa-table-tennis-paddle-ball',
-        'Cricket' => 'fa-baseball-bat-ball',
-        'Volleyball' => 'fa-volleyball-ball',
-        'Badminton' => 'fa-shuttlecock'
+        'football' => 'fa-futbol',
+        'soccer' => 'fa-futbol',
+        'basketball' => 'fa-basketball',
+        'tennis' => 'fa-table-tennis-paddle-ball',
+        'cricket' => 'fa-baseball-bat-ball',
+        'volleyball' => 'fa-volleyball',
+        'badminton' => 'fa-feather-pointed',
+        'table tennis' => 'fa-table-tennis-paddle-ball',
+        'squash' => 'fa-table-tennis-paddle-ball'
     ];
-    return $icons[$name] ?? 'fa-star';
+    return $icons[$normalized] ?? 'fa-trophy';
 }
 ?>

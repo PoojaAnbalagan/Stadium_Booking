@@ -1,6 +1,11 @@
 <?php
 require_once 'config.php';
 
+if (!isLoggedIn()) {
+    $redirect_url = 'calendar.php?' . ($_SERVER['QUERY_STRING'] ?? '');
+    redirect('login.php?redirect=' . urlencode($redirect_url));
+}
+
 if (!isset($_GET['sport']) || !isset($_GET['court']) || !isset($_GET['date'])) {
     redirect('index.php');
 }

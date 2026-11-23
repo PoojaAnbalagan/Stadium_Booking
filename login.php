@@ -5,7 +5,9 @@ require_once 'config.php';
 $error = '';
 $success = '';
 
-
+$redirect = isset($_POST['redirect']) && !empty($_POST['redirect']) 
+            ? $_POST['redirect'] 
+            : (isset($_GET['redirect']) && !empty($_GET['redirect']) ? $_GET['redirect'] : 'index.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     file_put_contents('debug_log.txt', "POST Request:\n" . print_r($_POST, true) . "\n", FILE_APPEND);
@@ -26,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['full_name'];
             
-            $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
             redirect($redirect);
         } else {
             $error = 'Invalid email or password';
@@ -58,7 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         mysqli_stmt_bind_param($insert_stmt, "ssss", $full_name, $email, $phone, $password);
         
         if (mysqli_stmt_execute($insert_stmt)) {
-            $success = 'Registration successful! Please login.';
+            $new_user_id = mysqli_insert_id($conn);
+            $_SESSION['user_id'] = $new_user_id;
+            $_SESSION['user_name'] = $full_name;
+            redirect($redirect);
         } else {
             $error = 'Registration failed. Please try again.';
             file_put_contents('debug_log.txt', "DB Error: " . mysqli_error($conn) . "\n", FILE_APPEND);
@@ -112,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
             <div id="login-form" class="form-content active">
                 <form action="login.php" method="POST" onsubmit="return handleSubmit(event)">
                     <input type="hidden" name="action" value="login">
+                    <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
                     <div class="form-group">
                         <label class="form-label">EMAIL ADDRESS</label>
                         <div class="input-wrapper">
@@ -139,10 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
                     </div>
 
                     <div class="social-options">
-                        <button type="button" class="btn-social btn-google" onclick="window.location.href='social_auth.php?provider=google'">
+                        <button type="button" class="btn-social btn-google" onclick="window.location.href='social_auth.php?provider=google&redirect=<?= urlencode($redirect) ?>'">
                             <i class="fab fa-google"></i> Sign in with Google
                         </button>
-                        <button type="button" class="btn-social btn-apple" onclick="window.location.href='social_auth.php?provider=apple'">
+                        <button type="button" class="btn-social btn-apple" onclick="window.location.href='social_auth.php?provider=apple&redirect=<?= urlencode($redirect) ?>'">
                             <i class="fab fa-apple"></i> Sign in with Apple
                         </button>
                     </div>
@@ -153,6 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
             <div id="register-form" class="form-content">
                 <form action="login.php" method="POST" onsubmit="return handleSubmit(event)">
                     <input type="hidden" name="action" value="register">
+                    <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
                     <div class="form-group">
                         <label class="form-label">FULL NAME</label>
                         <div class="input-wrapper">
@@ -198,10 +204,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
                     </div>
 
                     <div class="social-options">
-                        <button type="button" class="btn-social btn-google" onclick="window.location.href='social_auth.php?provider=google'">
+                        <button type="button" class="btn-social btn-google" onclick="window.location.href='social_auth.php?provider=google&redirect=<?= urlencode($redirect) ?>'">
                             <i class="fab fa-google"></i> Sign up with Google
                         </button>
-                        <button type="button" class="btn-social btn-apple" onclick="window.location.href='social_auth.php?provider=apple'">
+                        <button type="button" class="btn-social btn-apple" onclick="window.location.href='social_auth.php?provider=apple&redirect=<?= urlencode($redirect) ?>'">
                             <i class="fab fa-apple"></i> Sign up with Apple
                         </button>
                     </div>

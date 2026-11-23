@@ -3,6 +3,10 @@ require_once 'config.php';
 
 $provider = isset($_GET['provider']) ? $_GET['provider'] : '';
 
+if (isset($_GET['redirect'])) {
+    $_SESSION['auth_redirect'] = $_GET['redirect'];
+}
+
 // 1. Redirect to Google Consent Screen
 if (!isset($_GET['code'])) {
     if ($provider === 'google') {
@@ -107,7 +111,9 @@ if (isset($_GET['code'])) {
                 mysqli_stmt_bind_param($update_stmt, "si", $google_id, $existing_user['id']);
                 mysqli_stmt_execute($update_stmt);
                 
-                redirect('index.php');
+                $target = isset($_SESSION['auth_redirect']) && !empty($_SESSION['auth_redirect']) ? $_SESSION['auth_redirect'] : 'index.php';
+                unset($_SESSION['auth_redirect']);
+                redirect($target);
             } else {
                 // New User -> Register them automatically
                 $phone = ''; // Phone not provided by Google
@@ -121,7 +127,9 @@ if (isset($_GET['code'])) {
                     $_SESSION['user_name'] = $name;
                     // Debug: confirm session set
                     // var_dump($_SESSION); exit; 
-                    redirect('index.php');
+                    $target = isset($_SESSION['auth_redirect']) && !empty($_SESSION['auth_redirect']) ? $_SESSION['auth_redirect'] : 'index.php';
+                unset($_SESSION['auth_redirect']);
+                redirect($target);
                 } else {
                     die("Registration failed: " . mysqli_error($conn));
                 }
