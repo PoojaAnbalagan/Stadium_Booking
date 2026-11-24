@@ -511,6 +511,59 @@ if (!$booking) {
             }
         }
 
+        @media (max-width: 480px) {
+            .confirmation-container {
+                padding: 20px 12px;
+            }
+
+            .success-header {
+                padding: 30px 16px;
+            }
+
+            .success-header h2 {
+                font-size: 24px;
+            }
+
+            .success-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 48px;
+                margin-bottom: 20px;
+            }
+
+            .booking-details {
+                padding: 20px 14px;
+            }
+
+            .detail-section h3 {
+                font-size: 17px;
+            }
+
+            .transaction-badge {
+                padding: 16px 12px;
+                margin: 24px 0;
+            }
+
+            .transaction-id {
+                font-size: 16px;
+                word-break: break-all;
+            }
+
+            .btn-action {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+
+            .feedback-card {
+                padding: 18px 12px !important;
+            }
+
+            .rating-stars {
+                gap: 8px !important;
+                font-size: 1.5rem !important;
+            }
+        }
+
         /* Page load animation */
         body {
             opacity: 0;

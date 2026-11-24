@@ -237,11 +237,14 @@ $court = mysqli_fetch_assoc($court_result);
 
     <nav class="navbar">
         <div class="container">
-            <a href="index.php" class="logo-text">STADIUM</a>
+            <a href="index.php" class="logo-text">INBOOK</a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
             <div class="nav-links">
-                <a href="index.php">Home</a>
-                <a href="profile.php">Profile</a>
-                <a href="logout.php" class="btn-logout">Logout</a>
+                <a href="index.php">HOME</a>
+                <a href="profile.php">PROFILE</a>
+                <a href="logout.php" class="btn-logout">LOGOUT</a>
             </div>
         </div>
     </nav>
@@ -360,6 +363,11 @@ $court = mysqli_fetch_assoc($court_result);
             
             // Enable pay button
             document.getElementById('payBtn').disabled = false;
+        }
+
+        function toggleMenu() {
+            const nav = document.querySelector('.nav-links');
+            if (nav) nav.classList.toggle('active');
         }
     </script>
 </body>

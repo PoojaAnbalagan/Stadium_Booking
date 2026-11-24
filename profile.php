@@ -93,7 +93,7 @@ if ($upcoming_soon_result && mysqli_num_rows($upcoming_soon_result) > 0) {
 }
 
 // Fetch recent bookings for re-book functionality
-$recent_bookings_query = "SELECT b.*, c.name as court_name, c.id as court_id, s.name as sport_name 
+$recent_bookings_query = "SELECT b.*, c.name as court_name, c.id as court_id, s.id as sport_id, s.name as sport_name 
                           FROM bookings b
                           JOIN courts c ON b.court_id = c.id
                           JOIN sports s ON c.sport_id = s.id
@@ -120,7 +120,7 @@ $favorite_sport_data = ($favorite_sport_result && mysqli_num_rows($favorite_spor
 $recommendations = [];
 if ($favorite_sport_data) {
     // Find courts with user's favorite sport that they haven't booked
-    $recommendation_query = "SELECT c.id, c.name, c.price_per_hour, s.name as sport_name
+    $recommendation_query = "SELECT c.id, c.name, c.price_per_hour, s.id as sport_id, s.name as sport_name
                              FROM courts c
                              JOIN sports s ON c.sport_id = s.id
                              WHERE s.id = {$favorite_sport_data['sport_id']}
@@ -211,6 +211,9 @@ if (isset($_POST['cancel_booking'])) {
     <nav class="navbar">
         <div class="container">
             <a href="index.php" class="logo-text">INBOOK</a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
             <div class="nav-links">
                 <a href="index.php">HOME</a>
                 <a href="profile.php" class="active">PROFILE</a>
@@ -280,8 +283,9 @@ if (isset($_POST['cancel_booking'])) {
                         <i class="fas fa-clock"></i> <?= date('g:i A', strtotime($booking['start_time'])) ?>
                     </div>
                     <form action="calendar.php" method="GET">
-                        <input type="hidden" name="court_id" value="<?= $booking['court_id'] ?>">
-                        <input type="hidden" name="sport" value="<?= $booking['sport_name'] ?>">
+                        <input type="hidden" name="court" value="<?= $booking['court_id'] ?>">
+                        <input type="hidden" name="sport" value="<?= $booking['sport_id'] ?>">
+                        <input type="hidden" name="date" value="<?= date('Y-m-d') ?>">
                         <button type="submit" class="btn btn-primary btn-small"><i class="fas fa-redo"></i> Book</button>
                     </form>
                 </div>
@@ -303,7 +307,9 @@ if (isset($_POST['cancel_booking'])) {
                         <i class="fas fa-dollar-sign"></i><?= number_format($rec['price_per_hour'], 0) ?>/hr
                     </div>
                     <form action="calendar.php" method="GET">
-                        <input type="hidden" name="court_id" value="<?= $rec['id'] ?>">
+                        <input type="hidden" name="court" value="<?= $rec['id'] ?>">
+                        <input type="hidden" name="sport" value="<?= $rec['sport_id'] ?>">
+                        <input type="hidden" name="date" value="<?= date('Y-m-d') ?>">
                         <button type="submit" class="btn btn-primary btn-small"><i class="fas fa-play"></i> Try</button>
                     </form>
                 </div>
@@ -436,6 +442,11 @@ if (isset($_POST['cancel_booking'])) {
     </main>
 
     <script>
+        function toggleMenu() {
+            const nav = document.querySelector('.nav-links');
+            if (nav) nav.classList.toggle('active');
+        }
+
         // Page Transition
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('loaded');

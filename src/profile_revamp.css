@@ -389,3 +389,104 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Mobile Responsive Additions */
+@media (max-width: 768px) {
+    .profile-header-content {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 14px !important;
+    }
+
+    .avatar {
+        margin: 0 auto !important;
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 1.7rem !important;
+    }
+
+    .user-details h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .user-details p {
+        font-size: 0.85rem !important;
+        word-break: break-word !important;
+        line-height: 1.6 !important;
+    }
+
+    .reminder-card {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 15px !important;
+        padding: 20px 16px !important;
+    }
+
+    .reminder-action {
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+    }
+
+    .rebook-grid {
+        gap: 14px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .rebook-card {
+        min-width: 210px !important;
+        padding: 16px !important;
+    }
+
+    .booking-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 14px !important;
+        padding: 16px !important;
+    }
+
+    .booking-info {
+        width: 100% !important;
+    }
+
+    .booking-info p {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+
+    .booking-actions {
+        width: 100% !important;
+    }
+
+    .booking-actions form {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .booking-actions .btn-cancel {
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+        padding: 12px !important;
+    }
+
+    .tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 6px !important;
+        gap: 8px !important;
+    }
+
+    .tab-btn {
+        padding: 10px 16px !important;
+        white-space: nowrap !important;
+        font-size: 0.9rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .card {
+        padding: 22px 16px !important;
+        border-radius: 16px !important;
+    }
+}
