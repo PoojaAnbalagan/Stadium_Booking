@@ -304,7 +304,7 @@ if (isset($_POST['cancel_booking'])) {
                     <span class="recommendation-sport"><i class="fas fa-medal"></i> <?= htmlspecialchars($rec['sport_name']) ?></span>
                     <div class="recommendation-name"><?= htmlspecialchars($rec['name']) ?></div>
                     <div class="recommendation-price">
-                        <i class="fas fa-dollar-sign"></i><?= number_format($rec['price_per_hour'], 0) ?>/hr
+                        Rs. <?= number_format($rec['price_per_hour'], 0) ?>/hr
                     </div>
                     <form action="calendar.php" method="GET">
                         <input type="hidden" name="court" value="<?= $rec['id'] ?>">
@@ -338,6 +338,11 @@ if (isset($_POST['cancel_booking'])) {
                                     <span><i class="fas fa-calendar"></i> <?= date('M j, Y', strtotime($booking['booking_date'])) ?></span>
                                     <span><i class="fas fa-clock"></i> <?= date('g:i A', strtotime($booking['start_time'])) ?></span>
                                     <span><i class="fas fa-running"></i> <?= htmlspecialchars($booking['sport_name']) ?></span>
+                                    <span><i class="fas fa-tag"></i> Rs. <?= number_format($booking['total_price'], 2) ?></span>
+                                    <span style="color: <?= $booking['payment_method'] === 'cash' ? '#ffaa00' : 'var(--primary-green)' ?>;">
+                                        <i class="fas <?= $booking['payment_method'] === 'cash' ? 'fa-money-bill-wave' : 'fa-credit-card' ?>"></i> 
+                                        <?= $booking['payment_method'] === 'cash' ? 'Cash at Venue' : 'Debit Card' ?>
+                                    </span>
                                 </p>
                             </div>
                             <div class="booking-actions">
@@ -365,6 +370,8 @@ if (isset($_POST['cancel_booking'])) {
                                 <p>
                                     <span><i class="fas fa-calendar"></i> <?= date('M j, Y', strtotime($booking['booking_date'])) ?></span>
                                     <span><i class="fas fa-clock"></i> <?= date('g:i A', strtotime($booking['start_time'])) ?></span>
+                                    <span><i class="fas fa-tag"></i> Rs. <?= number_format($booking['total_price'], 2) ?></span>
+                                    <span><i class="fas <?= $booking['payment_method'] === 'cash' ? 'fa-money-bill-wave' : 'fa-credit-card' ?>"></i> <?= $booking['payment_method'] === 'cash' ? 'Cash' : 'Debit Card' ?></span>
                                 </p>
                             </div>
                             <span class="booking-status status-<?= $booking['status'] ?>">

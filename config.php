@@ -19,7 +19,7 @@ define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_USER', 'support.inbook@gmail.com'); // UPDATE THIS TO YOUR GMAIL
 define('SMTP_PASS', 'yieg asgr kicz bzug'); // Fixed missing quote
 define('SMTP_PORT', 587);
-define('SMTP_FROM', 'no-reply@inbook.com');
+define('SMTP_FROM', 'support.inbook@gmail.com');
 define('SMTP_NAME', 'InBook Sports');
 
 

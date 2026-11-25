@@ -184,7 +184,7 @@ $recs = getRecommendations();
                 $layout_class = $layout_classes[$idx % count($layout_classes)];
                 $icon_class = getSportIcon($sport_item['name']);
                 if ($sport_item['court_count'] > 0) {
-                    $subtitle = $sport_item['court_count'] . ($sport_item['court_count'] == 1 ? ' Court' : ' Courts') . ' • From $' . number_format($sport_item['min_price'], 0) . '/hr';
+                    $subtitle = $sport_item['court_count'] . ($sport_item['court_count'] == 1 ? ' Court' : ' Courts') . ' • From Rs. ' . number_format($sport_item['min_price'], 0) . '/hr';
                 } else {
                     $subtitle = 'Courts Coming Soon';
                 }
@@ -515,7 +515,7 @@ $recs = getRecommendations();
                         selectElement.innerHTML = '<option value="">Fully Booked</option>';
                     } else {
                         data.forEach(court => {
-                            selectElement.innerHTML += `<option value="${court.id}">${court.name} - $${court.price_per_hour}/hr</option>`;
+                            selectElement.innerHTML += `<option value="${court.id}">${court.name} - Rs. ${court.price_per_hour}/hr</option>`;
                         });
                     }
                 })

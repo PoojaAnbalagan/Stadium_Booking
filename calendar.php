@@ -229,7 +229,7 @@ $current_time = date('H:i:s');
                     <i class="fas fa-calendar-alt"></i> <?= date('l, F j, Y', strtotime($booking_date)) ?>
                 </p>
                 <div style="margin-top:10px; color:var(--text-gray);">
-                    <i class="fas fa-tag"></i> Hourly Rate: <span style="color:var(--white); font-weight:bold;">$<?= number_format($court['price_per_hour'], 2) ?>/hr</span> (Fixed Base Rate)
+                    <i class="fas fa-tag"></i> Hourly Rate: <span style="color:var(--white); font-weight:bold;">Rs. <?= number_format($court['price_per_hour'], 2) ?>/hr</span> (Fixed Base Rate)
                 </div>
                 <div class="cal-hours-badge">
                     <i class="fas fa-clock"></i> Operating Hours: <?= date('g:i A', strtotime(sprintf('%02d:00:00', $open_hour))) ?> - <?= date('g:i A', strtotime(sprintf('%02d:00:00', $close_hour))) ?>
@@ -320,7 +320,7 @@ $current_time = date('H:i:s');
                         </div>
                         <div>
                             <span style="color:var(--text-gray); font-size:0.85rem; display:block; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Total Amount</span>
-                            <strong id="summaryTotalText" style="color:var(--primary-green); font-size:1.3rem;">$<?= number_format($court['price_per_hour'], 2) ?></strong>
+                            <strong id="summaryTotalText" style="color:var(--primary-green); font-size:1.3rem;">Rs. <?= number_format($court['price_per_hour'], 2) ?></strong>
                         </div>
                     </div>
                 </div>
@@ -520,17 +520,17 @@ $current_time = date('H:i:s');
                     summaryTimeText.innerText = timeRangeStr;
                 }
                 if (summaryTotalText) {
-                    summaryTotalText.innerText = `$${total.toFixed(2)}`;
+                    summaryTotalText.innerText = `Rs. ${total.toFixed(2)}`;
                 }
 
                 bookBtn.disabled = false;
-                bookBtn.innerHTML = `PROCEED TO BOOK (${timeRangeStr} • $${total.toFixed(2)})`;
+                bookBtn.innerHTML = `PROCEED TO BOOK (${timeRangeStr} • Rs. ${total.toFixed(2)})`;
             } else {
                 if (summaryTimeText) {
                     summaryTimeText.innerText = 'Select a slot below';
                 }
                 if (summaryTotalText) {
-                    summaryTotalText.innerText = `$${total.toFixed(2)}`;
+                    summaryTotalText.innerText = `Rs. ${total.toFixed(2)}`;
                 }
 
                 bookBtn.disabled = true;

@@ -646,10 +646,10 @@ if (!$booking) {
 
                 <!-- Payment Information -->
                 <div class="detail-section">
-                    <h3><i class="fas fa-credit-card"></i> Payment</h3>
+                    <h3><i class="fas fa-credit-card"></i> Payment Details</h3>
                     <div class="detail-row">
-                        <span class="detail-label">Amount Paid:</span>
-                        <span class="detail-value">
+                        <span class="detail-label"><?= $booking['payment_method'] === 'cash' ? 'Amount Due (At Venue):' : 'Amount Paid:' ?></span>
+                        <span class="detail-value" style="color:var(--primary-green); font-size:1.1rem;">
                             <?php
                                 $start = strtotime($booking['start_time']);
                                 $end = strtotime($booking['end_time']);
@@ -657,25 +657,52 @@ if (!$booking) {
                                 $total = $hours * ($booking['price_per_hour'] ?? 0);
                                 // Fallback to DB total if calculation fails or is 0
                                 $display_total = ($total > 0) ? $total : $booking['total_price'];
-                                echo '$' . number_format($display_total, 2);
+                                echo 'Rs. ' . number_format($display_total, 2);
                             ?>
                         </span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Payment Method:</span>
-                        <span class="detail-value"><?= ucwords(str_replace('_', ' ', $booking['payment_method'])) ?></span>
+                        <span class="detail-value">
+                            <?php 
+                                if ($booking['payment_method'] === 'cash') {
+                                    echo '<i class="fas fa-money-bill-wave" style="color:#ffaa00;"></i> Cash (On the Spot / Physical Counter)';
+                                } elseif ($booking['payment_method'] === 'debit_card') {
+                                    echo '<i class="fas fa-credit-card" style="color:var(--primary-green);"></i> Debit Card (Online)';
+                                } else {
+                                    echo htmlspecialchars(ucwords(str_replace('_', ' ', $booking['payment_method'])));
+                                }
+                            ?>
+                        </span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Status:</span>
-                        <span class="detail-value status-completed">
-                            <i class="fas fa-check-circle"></i> Completed
+                        <span class="detail-label">Payment Status:</span>
+                        <span class="detail-value">
+                            <?php if ($booking['payment_method'] === 'cash' || $booking['payment_status'] === 'pending_at_venue' || $booking['payment_status'] === 'pending'): ?>
+                                <span style="color: #ffaa00; font-weight:700; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-clock"></i> Pay at Venue (Court Reserved)
+                                </span>
+                            <?php else: ?>
+                                <span class="status-completed">
+                                    <i class="fas fa-check-circle"></i> Paid & Confirmed
+                                </span>
+                            <?php endif; ?>
                         </span>
                     </div>
                 </div>
 
+                <?php if ($booking['payment_method'] === 'cash'): ?>
+                <div class="info-box" style="border-left-color: #ffaa00; background: rgba(255, 170, 0, 0.1); margin: 25px 0;">
+                    <p style="color: #ffaa00;">
+                        <i class="fas fa-store" style="color: #ffaa00; font-size: 20px;"></i>
+                        <span><strong>Cash on Arrival:</strong> Your court is reserved! Please arrive 15 minutes before play time and pay <strong>Rs. <?= number_format($display_total, 2) ?></strong> in cash at the stadium front desk counter.</span>
+                    </p>
+                </div>
+                <?php endif; ?>
+
                 <!-- Transaction ID -->
                 <div class="transaction-badge">
-                    <p class="transaction-label">Transaction ID</p>
+                    <p class="transaction-label"><?= $booking['payment_method'] === 'cash' ? 'Booking Reference ID' : 'Transaction Reference ID' ?></p>
                     <div class="transaction-id"><?= $booking['transaction_id'] ?></div>
                 </div>
 
@@ -683,12 +710,13 @@ if (!$booking) {
                 <div class="action-buttons">
                     <?php
                         // Encode for SMS
+                        $pay_note = ($booking['payment_method'] === 'cash') ? ' (Pay Rs. ' . number_format($display_total, 2) . ' cash at counter)' : ' (Paid Rs. ' . number_format($display_total, 2) . ' via Debit Card)';
                         $sms_body = "Booking Confirmed! Court: " . $booking['court_name'] . 
                                     ", Date: " . date('d M Y', strtotime($booking['booking_date'])) . 
                                     ", Time: " . date('g:i A', strtotime($booking['start_time'])) . 
+                                    $pay_note .
                                     ", Ref: " . $booking['transaction_id'];
-                        // Different separators for iOS (&) vs Android (?) - usually ?body works for both modern ones or just body
-                        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+                        $ua = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
                         $sep = (strpos($ua, 'iphone') !== false || strpos($ua, 'ipad') !== false) ? '&' : '?';
                     ?>
                     <a href="sms:<?= $sep ?>body=<?= rawurlencode($sms_body) ?>" class="btn-action btn-sms">
